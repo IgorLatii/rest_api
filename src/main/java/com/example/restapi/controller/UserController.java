@@ -15,8 +15,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @GetMapping("/{name}")
     public ResponseEntity<String> authenticateUser(@PathVariable String name, @RequestParam String password) {
+        //System.out.println("Received key_word: " + name);
+        //System.out.println("Received key_word: " + password);
         // Call auth method
         Optional<User> user = userService.authenticateUser(name, password);
 

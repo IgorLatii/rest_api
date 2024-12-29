@@ -17,13 +17,14 @@ public class UserService {
         return userRepository.findById(userName);
     }*/
 
-    public Optional<User> authenticateUser(String userName, String password) {
-        Optional<User> userOptional = userRepository.findById(userName);
-
+    public Optional<User> authenticateUser(String name, String password) {
+        Optional<User> userOptional = userRepository.findById(name);
+        //System.out.println("User from database " + userOptional.get().getUserName()
+                //+ " " + userOptional.get().getPassword());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             // Checking passwords
-            if (user.getPassword().equals(password)) {
+            if (user.getPassword().trim().equals(password.trim())) {
                 return Optional.of(user); // Success
             }
         }
