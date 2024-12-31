@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Map;
 
 @RestController
@@ -45,12 +46,11 @@ public class MeterDataController {
             }
 
             byte[] decodedBytes = Base64.getDecoder().decode(request.getPhotoBase64());
-            String fileName = request.getContractNumber() + "_" + request.getMeterNumber() + "_" + System.currentTimeMillis() + ".jpg";
+            String fileName = setFileName(request);
+
             Path path = Paths.get("uploads/" + fileName);
             Files.createDirectories(path.getParent());
             Files.write(path, decodedBytes);
-
-
 
             // Saving data in DB
             MeterData data = new MeterData();
@@ -65,5 +65,21 @@ public class MeterDataController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
+    }
+
+    private String setFileName(DataUploadRequest request) {
+        long actual_time = System.currentTimeMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(actual_time);
+
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+
+        return year + "/" + month + "/" + request.getContractNumber() + "/" + request.getMeterNumber() + "_"
+                + dayOfMonth + "_" + month + "_" + year + "_" + hour + "_" + minute + "_" + second + ".jpg";
     }
 }
